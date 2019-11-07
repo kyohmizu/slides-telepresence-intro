@@ -45,7 +45,7 @@ exclude: true
   
   - Install Telepresence
   
-  - Some Examples (Demo)
+  - Examples (Demo)
 
 ---
 class: center, middle, blue
@@ -75,7 +75,13 @@ Local development against a remote Kubernetes cluster
 class: header-margin
 ### CNCF Landscape
 
-<center><img src="https://landscape.cncf.io/images/landscape.png" width=100%></center>
+.half-3[
+<center><img src="https://landscape.cncf.io/images/landscape.png" width=95%></center>
+]
+
+.zoom0-r[
+<u><https://landscape.cncf.io/images/landscape.png></u>
+]
 
 ---
 class: header-margin
@@ -120,7 +126,7 @@ $ telepresence --version
 ]
 
 ---
-### Quick Start (Demo)
+### Quick Start
 
 <u><https://github.com/telepresenceio/telepresence></u>
 
@@ -184,7 +190,7 @@ or display in web browser
 
 .zoom2[
 ```bash
-# Create a file for development
+# Set up a development environment
 $ mkdir telepresence; cd telepresence
 $ echo "hello from your laptop" > file.txt
 $ ls
@@ -234,6 +240,75 @@ $ fg
 # New pod is created
 $ kubectl get po | grep hello-world
 hello-world-645b769fd4-tvsr6   1/1     Running   0          8s
+```
+]
+
+---
+### Debug Example 1 (Demo)
+
+<u><https://www.telepresence.io/tutorials/docker></u>
+
+.zoom2[
+```bash
+# Get a sample from GitHub
+$ git clone https://github.com/datawire/hello-world
+$ cd hello-world
+$ ls
+Dockerfile  LICENSE  README.md  requirements.txt  server.py
+```
+]
+
+---
+### Example
+
+.zoom2[
+```bash
+# Fix a dependency problem
+$ git diff requirements.txt
+diff --git a/requirements.txt b/requirements.txt
+index a938e09..16b0f08 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -3,4 +3,4 @@ Flask==1.0.2
+ itsdangerous==1.1.0
+ Jinja2==2.10
+ MarkupSafe==1.1.1
+-Werkzeug==0.15.2
++Werkzeug==0.15.6
+
+# Build a docker image
+$ sudo docker build -t hello-dev .
+```
+]
+
+---
+### Example
+
+.zoom2[
+```bash
+$ sudo docker image ls | grep hello-dev
+hello-dev      latest     4ef6bfec0bdb     2 hours ago    122MB
+
+$ telepresence --swap-deployment hello-world --docker-run \
+--rm -it -v $(pwd):/usr/src/app hello-dev
+```
+]
+
+---
+### Example
+
+.zoom2[
+```bash
+
+```
+]
+
+---
+### Example
+
+.zoom2[
+```bash
+
 ```
 ]
 
