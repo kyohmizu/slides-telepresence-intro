@@ -1,5 +1,5 @@
 class: center, middle, inverse
-## Introduction to Telepresence
+### Introduction to Telepresence
 
 ---
 exclude: true
@@ -20,56 +20,235 @@ exclude: true
     - Security
 ]
 ---
-### Required knowledge
+### Required Knowledge
 
 - Basic knowledge of kubernetes
 
-### Targets
+### Goals
 
-People who:
-
-- don't know Service Mesh
-
-- have never used Istio
+- Understand:
+  
+  - the concept of telepresence
+  
+  - how to test application with Telepresence
 
 ---
 ### Contents
 
-- What is telepresence?
+- Overview
 
-- Install telepresence
+  - What is Telepresence?
+  
+  - Features
 
-- How it works
-
-- Pros & Cons
+- Get Started
+  
+  - Install Telepresence
+  
+  - Some Examples (Demo)
 
 ---
-### What is telepresence?
-
-
+class: center, middle, blue
+## Overview
 
 ---
-### Install telepresence
+### What is Telepresence?
+
+.left-large[
+<u><https://www.telepresence.io/></u>
+
+Local development against a remote Kubernetes cluster
+
+- OSS hosted by CNCF
+
+  - The Sandbox project
+
+- Enables developers to do fast and easy test/debug of a service
+
+]
+
+.right-small[
+<center><img src="https://branding.cncf.io/img/projects/telepresence/horizontal/color/telepresence-horizontal-color.png" width=100%></center>
+]
+
+---
+class: header-margin
+### CNCF Landscape
+
+<center><img src="https://landscape.cncf.io/images/landscape.png" width=100%></center>
+
+---
+class: header-margin
+### CNCF Landscape
+
+<center><img src="landscape.png" width=55%></center>
+
+---
+### Features
+
+With Telepresence, developers can:
+
+- Deploy a service locally in the same condition as a Kubernetes cluster
+
+- Use any tool installed locally to test/debug/edit a service
+
+- Swap a service running on a cluster for a local service
 
 ---
 ### How it works
 
 ---
 class: center, middle, blue
-# Demo
+## Get Started
 
 ---
-### Pros & Cons
+### Install Telepresence
+
+<u><https://www.telepresence.io/reference/install></u>
+
+On Ubuntu, run the following:
+
+.zoom2[
+```bash
+$ curl -s https://packagecloud.io/install/repositories/→
+datawireio/telepresence/script.deb.sh | sudo bash
+$ sudo apt install --no-install-recommends telepresence
+
+# Verify the Installation
+$ telepresence --version
+```
+]
+
+---
+### Quick Start (Demo)
+
+<u><https://github.com/telepresenceio/telepresence></u>
+
+.zoom2[
+```bash
+# Verify the connection to the Kubernetes cluster
+$ kubectl get no
+NAME                     STATUS   ROLES   AGE   VERSION
+aks-default-09796230-0   Ready    agent   43h   v1.13.12
+aks-default-09796230-1   Ready    agent   43h   v1.13.12
+
+# Start a shell that proxies connections to Kubernetes
+# Needs to enter the sudo password
+$ telepresence
+```
+]
+
+---
+### Debug Example 1 (Demo)
+
+<u><https://www.telepresence.io/tutorials/kubernetes></u>
+
+.zoom1[
+```bash
+# Deploy a service in the Kubernetes cluster
+$ kubectl create deployment hello-world --image=datawire/hello-world
+deployment.apps/hello-world created
+$ kubectl expose deployment hello-world --type=LoadBalancer \
+--port=8000 --target-port=8000 --name=hello-world
+service/hello-world exposed
+
+$ kubectl get po | grep hello-world
+hello-world-645b769fd4-pxh8l   1/1     Running   0          3m52s
+
+$ kubectl get svc
+NAME          TYPE           CLUSTER-IP     EXTERNAL-IP      
+PORT(S)          AGE
+hello-world   LoadBalancer   10.0.181.195   104.46.217.233   
+8000:31793/TCP   4m49s
+```
+]
+
+---
+### Debug Example 1 (Demo)
+
+.zoom2[
+```bash
+# Send a query to a service running in the cluster
+$ export HELLOWORLD=http://104.46.217.233:8000
+$ curl $HELLOWORLD
+Hello, world!
+```
+]
+
+or display in web browser
+
+<img src="hello-world-browser.png" width=70%>
+
+---
+### Debug Example 1 (Demo)
+
+.zoom2[
+```bash
+# Create a file for development
+$ mkdir telepresence; cd telepresence
+$ echo "hello from your laptop" > file.txt
+$ ls
+file.txt
+
+# Test locally
+$ python3 -m http.server 8001 &
+[1] 47404
+$ curl http://localhost:8001/file.txt
+hello from your laptop
+$ kill %1
+```
+]
+
+---
+### Debug Example 1 (Demo)
+
+.zoom2[
+```bash
+# Swap the deployment with Telepresence
+$ telepresence --swap-deployment hello-world --expose 8000 \
+--run python3 -m http.server 8000 &
+
+# A pod is swapped
+$ kubectl get po | grep hello-world
+hello-world-7c2fc81aaad6400bae6c760f74be47cb-59db7d4c9b-7ll2r
+   1/1     Running  0          5m28s
+
+# Send a query to a service
+$ curl $HELLOWORLD/file.txt
+hello from your laptop
+```
+]
+
+or display in web browser
+
+---
+### Debug Example 1 (Demo)
+
+.zoom2[
+```bash
+# Finish swapping
+# Kill Telepresence locally
+$ fg
+^C
+
+# New pod is created
+$ kubectl get po | grep hello-world
+hello-world-645b769fd4-tvsr6   1/1     Running   0          8s
+```
+]
 
 ---
 ### Links
 
-.zoom1[
+.zoom2[
 Official  
 <u><https://www.telepresence.io/></u>
 
 Docs  
 <u><https://www.telepresence.io/discussion/overview/></u>
+
+GitHub  
+<u><https://github.com/telepresenceio/telepresence></u>
 
 Book  
 <u><https://ktdkt.booth.pm/items/1574892></u>
@@ -77,4 +256,4 @@ Book
 
 ---
 class: center, middle, blue
-# Thank you!
+## Thank you!
