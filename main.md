@@ -103,6 +103,16 @@ With Telepresence, developers can:
 ---
 ### How it works
 
+<u><https://www.telepresence.io/discussion/how-it-works></u>
+
+Telepresence builds a network-proxy between:
+
+- a custom pod running inside a Kubernetes cluster
+
+- a process running on your development machine
+
+<center><img src="arch.png" width=100%></center>
+
 ---
 class: center, middle, blue
 ## Get Started
@@ -145,14 +155,44 @@ $ telepresence
 ]
 
 ---
-### Debug Example 1 (Demo)
+### Example
+
+.zoom01[
+```bash
+$ cat hello-world-deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello-world
+  name: hello-world
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-world
+  template:
+    metadata:
+      labels:
+        app: hello-world
+    spec:
+      containers:
+      - image: datawire/hello-world
+        name: hello-world
+        ports:
+        - containerPort: 8000
+```
+]
+
+---
+### Example
 
 <u><https://www.telepresence.io/tutorials/kubernetes></u>
 
 .zoom1[
 ```bash
 # Deploy a service in the Kubernetes cluster
-$ kubectl create deployment hello-world --image=datawire/hello-world
+$ kubectl apply -f hello-world-deploy.yaml
 deployment.apps/hello-world created
 $ kubectl expose deployment hello-world --type=LoadBalancer \
 --port=8000 --target-port=8000 --name=hello-world
@@ -170,7 +210,7 @@ hello-world   LoadBalancer   10.0.181.195   104.46.217.233
 ]
 
 ---
-### Debug Example 1 (Demo)
+### Example
 
 .zoom2[
 ```bash
@@ -186,7 +226,7 @@ or display in web browser
 <img src="hello-world-browser.png" width=70%>
 
 ---
-### Debug Example 1 (Demo)
+### Example
 
 .zoom2[
 ```bash
@@ -206,7 +246,7 @@ $ kill %1
 ]
 
 ---
-### Debug Example 1 (Demo)
+### Example
 
 .zoom2[
 ```bash
@@ -228,7 +268,7 @@ hello from your laptop
 or display in web browser
 
 ---
-### Debug Example 1 (Demo)
+### Example
 
 .zoom2[
 ```bash
@@ -244,7 +284,7 @@ hello-world-645b769fd4-tvsr6   1/1     Running   0          8s
 ]
 
 ---
-### Debug Example 1 (Demo)
+### Example (Docker)
 
 <u><https://www.telepresence.io/tutorials/docker></u>
 
@@ -259,7 +299,7 @@ Dockerfile  LICENSE  README.md  requirements.txt  server.py
 ]
 
 ---
-### Example
+### Example (Docker)
 
 .zoom2[
 ```bash
@@ -282,33 +322,44 @@ $ sudo docker build -t hello-dev .
 ]
 
 ---
-### Example
+### Example (Docker)
 
 .zoom2[
 ```bash
 $ sudo docker image ls | grep hello-dev
 hello-dev      latest     4ef6bfec0bdb     2 hours ago    122MB
 
+# Swap a service for a docker container running locally
 $ telepresence --swap-deployment hello-world --docker-run \
 --rm -it -v $(pwd):/usr/src/app hello-dev
+
+$ curl http://104.46.217.233:8000
+Hello, world!
+
+# Modify server.py
+$ sed -i.bak -e s/Hello/Greetings/ server.py
+
+$ curl http://104.46.217.233:8000
+Greetings, world!
 ```
 ]
 
 ---
-### Example
+### Example (Docker)
 
-.zoom2[
+.zoom01[
 ```bash
-
-```
-]
-
----
-### Example
-
-.zoom2[
-```bash
-
+# 2 docker containers are running locally
+$ sudo docker container ls
+CONTAINER ID        IMAGE                               COMMAND               
+  CREATED             STATUS              PORTS                        
+    NAMES
+e9fc5e0f7ddc        hello-dev                           "python3 ./server.py" 
+  8 minutes ago       Up 8 minutes                                     
+    telepresence-1573198861-6937146-39240
+1851864adb52        datawire/telepresence-local:0.103   "/sbin/tini -v -- py…"
+  8 minutes ago       Up 8 minutes        127.0.0.1:41695->38022/tcp   
+    telepresence-1573198854-7027166-39240
 ```
 ]
 
