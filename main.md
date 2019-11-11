@@ -2,7 +2,6 @@ class: center, middle, inverse
 ### Introduction to Telepresence
 
 ---
-exclude: true
 ### whoami
 
 .left-small[
